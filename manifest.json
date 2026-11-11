@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.krhr5.tailscale-plus",
+  "name": "Tailscale Plus",
+  "version": "1.0.0",
+  "author": "krhr5",
+  "license": "MIT",
+  "description": "Tailscale in the Omarchy bar with exit nodes and Mullvad, machine details, this device's settings, and a network check.",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "Panel.qml"
+  },
+  "barWidget": {
+    "displayName": "Tailscale Plus",
+    "description": "Toggle Tailscale, pick exit nodes or Mullvad regions, inspect machines, change this device's Tailscale settings, and run a network check.",
+    "category": "Network",
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {
+      "refreshIntervalSec": 30
+    },
+    "schema": [
+      {
+        "key": "refreshIntervalSec",
+        "type": "integer",
+        "label": "Refresh interval (seconds)",
+        "min": 5,
+        "max": 3600,
+        "step": 5,
+        "defaultValue": 30
+      }
+    ]
+  }
+}
