@@ -1238,6 +1238,15 @@ Panel {
             }
 
             PrefToggleRow {
+              visible: tailscale.fileSharing && tailscale.receiveAvailable
+              width: parent.width
+              prefKey: "receive"
+              title: strings.t("device.receive")
+              subtitle: tailscale.receiveOn ? strings.t("device.receiveHelp") : strings.t("device.receiveOff")
+              attention: !tailscale.receiveOn
+            }
+
+            PrefToggleRow {
               width: parent.width
               prefKey: "dns"
               title: strings.t("device.dns")

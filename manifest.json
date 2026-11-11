@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "io.github.krhr5.omarchy-tailnet",
   "name": "Omarchy Tailnet",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "krhr5",
   "license": "MIT",
   "description": "Tailscale in the Omarchy bar with exit nodes and Mullvad, machine details, this device's settings, and a network check.",

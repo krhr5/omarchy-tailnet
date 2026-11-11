@@ -9,7 +9,8 @@ A Tailscale bar widget for [Omarchy](https://omarchy.org/). It builds on Omarchy
 - **Machines:** every device on the tailnet, offline ones included and dimmed with "last seen". Each machine shows whether its connection is direct, relayed (and through which relay), or idle. Click a machine to expand its details: OS, IPv4 and IPv6 addresses, DNS name, connection, last handshake, traffic, when it was added, key expiry, and tags. There's also a button to its page in the admin console. Copy and Taildrop send buttons work as in the built-in widget.
 - **This device:**
   - its IP and DNS name, with copy buttons, plus Tailscale version, home relay and key expiry
-  - switches for **Run as exit node** (shows when it's waiting for approval), **Tailscale SSH**, **Use tailnet DNS** and **Use subnet routes**
+  - switches for **Run as exit node** (shows when it's waiting for approval), **Tailscale SSH**, **Receive files**, **Use tailnet DNS** and **Use subnet routes**
+  - **Receive files** turns Omarchy's Taildrop receiver (`omarchy-tailscale-receive.service`) on or off. Without it, files sent to a Linux machine wait inside Tailscale and never appear. Omarchy's Tailscale installer turns it on, but a Tailscale installed any other way leaves it off.
   - **Machine page** and **Admin console** buttons
 - **Network check:** run on demand. It shows whether direct connections are possible (UDP), NAT type, IPv4/IPv6, port mapping (UPnP / NAT-PMP / PCP), captive portal detection, the nearest relay and other relay latencies.
 - **Connections:** switch between Tailscale accounts when you have more than one.
@@ -27,10 +28,10 @@ A Tailscale bar widget for [Omarchy](https://omarchy.org/). It builds on Omarchy
 
   If it isn't set, the panel offers to authorize it through a polkit prompt.
 - `wl-copy` (from `wl-clipboard`) for the copy buttons
-- Omarchy's `omarchy-tailscale-send` (Taildrop send) and `omarchy-launch-browser` (login and admin-console links), which ship with Omarchy
+- Omarchy's `omarchy-tailscale-send` (Taildrop send), `omarchy-tailscale-receive.service` (Taildrop receive) and `omarchy-launch-browser` (login and admin-console links), which ship with Omarchy
 - Mullvad regions appear only when the Tailscale [Mullvad add-on](https://tailscale.com/kb/1258/mullvad-exit-nodes) is enabled **for this device** in the admin console
 
-There are no other dependencies, and the plugin installs nothing system-wide.
+There are no other dependencies, and the plugin installs nothing system-wide. The only setting outside Tailscale it touches is the user-level Taildrop receive service, and only when you flip **Receive files**.
 
 ## Install
 
@@ -73,8 +74,8 @@ Everything goes through the local `tailscale` CLI. The plugin makes no network r
 | When | Command |
 |---|---|
 | Every refresh (30 s by default; set it in the widget settings) | `tailscale status --json` (without peers while the panel is closed), `tailscale exit-node list`, `tailscale switch --list --json` |
-| While the panel is open | `tailscale debug prefs`; also `tailscale debug derp-map`, once, for relay names |
-| A switch is flipped | `tailscale set --advertise-exit-node`, `--ssh`, `--accept-dns`, `--accept-routes`, `--exit-node-allow-lan-access` or `--exit-node` (only the flag you changed) |
+| While the panel is open | `tailscale debug prefs`, `systemctl --user show omarchy-tailscale-receive.service`; also `tailscale debug derp-map`, once, for relay names |
+| A switch is flipped | `tailscale set --advertise-exit-node`, `--ssh`, `--accept-dns`, `--accept-routes`, `--exit-node-allow-lan-access` or `--exit-node` (only the flag you changed); **Receive files** runs `systemctl --user enable --now` or `disable --now omarchy-tailscale-receive.service` |
 | **Run check** is clicked | `tailscale netcheck --format=json`. It sends STUN probes to Tailscale's relay servers. |
 
 Shell IPC (`omarchy-shell io.github.krhr5.omarchy-tailnet <fn>`): `open`, `close`, `toggle`, `refresh`, `up`, `down`, `toggleTailscale`, `status`, `netcheck`.

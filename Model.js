@@ -284,6 +284,23 @@ function parseNetcheck(raw, derpNames) {
   }
 }
 
+// `systemctl --user show -p LoadState -p UnitFileState -p ActiveState <unit>`
+function parseUnitState(raw) {
+  var state = {}
+  var lines = String(raw || "").split(/\r?\n/)
+  for (var i = 0; i < lines.length && i < 16; i++) {
+    var eq = lines[i].indexOf("=")
+    if (eq > 0) state[lines[i].substring(0, eq)] = boundedString(lines[i].substring(eq + 1), 32)
+  }
+  var fileState = String(state.UnitFileState || "")
+  var active = String(state.ActiveState || "")
+  return {
+    available: state.LoadState === "loaded",
+    enabled: fileState === "enabled" || fileState === "enabled-runtime",
+    active: active === "active" || active === "activating" || active === "reloading"
+  }
+}
+
 function adminMachineUrl(ip) {
   var value = String(ip || "")
   return /^100\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(value) ? "https://login.tailscale.com/admin/machines/" + value : ""
@@ -521,6 +538,7 @@ if (typeof module !== "undefined") {
     parseDerpNames: parseDerpNames,
     parseNetcheck: parseNetcheck,
     adminMachineUrl: adminMachineUrl,
+    parseUnitState: parseUnitState,
     healthMessages: healthMessages
   }
 }

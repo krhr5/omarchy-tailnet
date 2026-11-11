@@ -116,5 +116,8 @@
   "time.now": "just now",
   "time.soon": "in under a minute",
   "time.ago": "%1 ago",
-  "time.in": "in %1"
+  "time.in": "in %1",
+  "device.receive": "Receive files",
+  "device.receiveHelp": "Save files sent from your other devices (Taildrop) to Downloads",
+  "device.receiveOff": "Off: files sent to this device wait inside Tailscale and won't appear in Downloads"
 }

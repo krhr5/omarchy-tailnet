@@ -60,6 +60,13 @@ Item {
   property var derpNames: ({})
   property bool _derpLoaded: false
   property var netcheck: null
+  // Omarchy's Taildrop receiver (omarchy-tailscale-receive.service). Without
+  // it, files sent to a Linux machine wait in tailscaled and never appear.
+  readonly property string receiveUnit: "omarchy-tailscale-receive.service"
+  property bool receiveAvailable: false
+  property bool receiveOn: false
+  property string _receiveStateOutput: ""
+  property string _receiveError: ""
   property string netcheckError: ""
   property double netcheckAtMs: 0
   readonly property bool netcheckRunning: netcheckProcess.running
@@ -248,6 +255,11 @@ Item {
       prefsProcess.command = ["tailscale", "debug", "prefs"]
       prefsProcess.running = true
       launched = true
+    }
+    if ((fullPeers === true || peersWanted) && !receiveStateProcess.running && !receiveProcess.running) {
+      _receiveStateOutput = ""
+      receiveStateProcess.command = ["systemctl", "--user", "show", "-p", "LoadState", "-p", "UnitFileState", "-p", "ActiveState", receiveUnit]
+      receiveStateProcess.running = true
     }
     if (!_derpLoaded && !derpProcess.running) {
       _derpOutput = ""
@@ -485,11 +497,22 @@ Item {
   })
 
   function prefValue(key) {
+    if (key === "receive") return receiveOn
     if (!prefs) return false
     return prefs[_prefFields[key]] === true
   }
 
+  function setReceive(on) {
+    if (!receiveAvailable || receiveProcess.running || settingPref !== "") return
+    receiveOn = on === true
+    settingPref = "receive"
+    _receiveError = ""
+    receiveProcess.command = ["systemctl", "--user", on === true ? "enable" : "disable", "--now", receiveUnit]
+    receiveProcess.running = true
+  }
+
   function setPref(key, value) {
+    if (key === "receive") { setReceive(value === true); return }
     var flag = _prefFlags[key]
     if (!installed || !flag || prefProcess.running || !prefs) return
     var next = {}
@@ -598,6 +621,7 @@ Item {
       if (mullvadExitNodesProcess.running) mullvadExitNodesProcess.running = false
       if (prefsProcess.running) prefsProcess.running = false
       if (derpProcess.running) derpProcess.running = false
+      if (receiveStateProcess.running) receiveStateProcess.running = false
       if (accountsProcess.running) accountsProcess.running = false
     }
   }
@@ -811,6 +835,38 @@ Item {
       } else if (stderr !== "") {
         // `tailscale set` prints warnings (e.g. IP forwarding off) but succeeds.
         root.actionStatus = root.elideStatus(stderr)
+        actionStatusTimer.restart()
+      }
+      root.settingPref = ""
+      root.refreshStatusAndAccounts(false, true)
+    }
+  }
+
+  Process {
+    id: receiveStateProcess
+    running: false
+    command: []
+    stdout: StdioCollector { id: receiveStateStdout; waitForEnd: true; onStreamFinished: root._receiveStateOutput = text }
+    onExited: function(exitCode) {
+      // A toggle in flight owns receiveOn until it finishes.
+      if (receiveProcess.running) return
+      var state = Model.parseUnitState(String(receiveStateStdout.text || root._receiveStateOutput || ""))
+      root.receiveAvailable = state.available
+      root.receiveOn = state.enabled && state.active
+    }
+  }
+
+  Process {
+    id: receiveProcess
+    running: false
+    command: []
+    stderr: StdioCollector { id: receiveStderr; waitForEnd: true; onStreamFinished: root._receiveError = text }
+    onExited: function(exitCode) {
+      // systemctl reports created/removed symlinks on stderr even on success,
+      // so only surface stderr when the command failed.
+      if (exitCode !== 0) {
+        root.lastError = root.elideStatus(String(receiveStderr.text || root._receiveError || "").trim() || strings.t("tailscale.commandFailed"))
+        root.actionStatus = root.lastError
         actionStatusTimer.restart()
       }
       root.settingPref = ""
