@@ -130,7 +130,7 @@ function peerFromStatus(id, peer, tr) {
   }
 }
 
-// ---- Tailscale Plus additions ----------------------------------------------
+// ---- Omarchy Tailnet additions ----------------------------------------------
 
 function boundedString(value, max) {
   var text = String(value === undefined || value === null ? "" : value)

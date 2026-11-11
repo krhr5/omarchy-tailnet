@@ -10,8 +10,8 @@ import "Model.js" as Model
 
 Panel {
   id: root
-  moduleName: "io.github.krhr5.tailscale-plus"
-  ipcTarget: "io.github.krhr5.tailscale-plus"
+  moduleName: "io.github.krhr5.omarchy-tailnet"
+  ipcTarget: "io.github.krhr5.omarchy-tailnet"
   manageIpc: false
 
   // Items inside the panel's lazily built content, null until it first
@@ -25,7 +25,7 @@ Panel {
   readonly property Item peerList: panel.loadedContent ? panel.loadedContent.peerList : null
   readonly property var sharedCopyPopup: panel.loadedContent ? panel.loadedContent.sharedCopyPopup : null
 
-  // ---- Tailscale Plus additions ----
+  // ---- Omarchy Tailnet additions ----
   Commons.Translations { id: strings; directory: Qt.resolvedUrl("i18n") }
   property string expandedPeerId: ""
   property double nowMs: Date.now()

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "id": "io.github.krhr5.tailscale-plus",
-  "name": "Tailscale Plus",
+  "id": "io.github.krhr5.omarchy-tailnet",
+  "name": "Omarchy Tailnet",
   "version": "1.0.0",
   "author": "krhr5",
   "license": "MIT",
@@ -13,7 +13,7 @@
     "barWidget": "Panel.qml"
   },
   "barWidget": {
-    "displayName": "Tailscale Plus",
+    "displayName": "Omarchy Tailnet",
     "description": "Toggle Tailscale, pick exit nodes or Mullvad regions, inspect machines, change this device's Tailscale settings, and run a network check.",
     "category": "Network",
     "allowMultiple": false,

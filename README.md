@@ -1,4 +1,4 @@
-# Tailscale Plus
+# Omarchy Tailnet
 
 A Tailscale bar widget for [Omarchy](https://omarchy.org/). It builds on Omarchy's built-in Tailscale widget and adds the things you would otherwise open the admin console or a terminal for.
 
@@ -35,7 +35,7 @@ There are no other dependencies, and the plugin installs nothing system-wide.
 ## Install
 
 ```bash
-omarchy plugin add https://github.com/krhr5/omarchy-tailscale-plus --enable
+omarchy plugin add https://github.com/krhr5/omarchy-tailnet --enable
 ```
 
 To run it in place of Omarchy's built-in Tailscale widget, disable that one:
@@ -44,12 +44,12 @@ To run it in place of Omarchy's built-in Tailscale widget, disable that one:
 omarchy plugin disable omarchy.tailscale
 ```
 
-Move the widget around the bar with `omarchy bar move io.github.krhr5.tailscale-plus --section right`.
+Move the widget around the bar with `omarchy bar move io.github.krhr5.omarchy-tailnet --section right`.
 
 ## Remove
 
 ```bash
-omarchy plugin remove io.github.krhr5.tailscale-plus
+omarchy plugin remove io.github.krhr5.omarchy-tailnet
 ```
 
 To return to the built-in widget, run `omarchy plugin enable omarchy.tailscale`.
@@ -77,7 +77,7 @@ Everything goes through the local `tailscale` CLI. The plugin makes no network r
 | A switch is flipped | `tailscale set --advertise-exit-node`, `--ssh`, `--accept-dns`, `--accept-routes`, `--exit-node-allow-lan-access` or `--exit-node` (only the flag you changed) |
 | **Run check** is clicked | `tailscale netcheck --format=json`. It sends STUN probes to Tailscale's relay servers. |
 
-Shell IPC (`omarchy-shell io.github.krhr5.tailscale-plus <fn>`): `open`, `close`, `toggle`, `refresh`, `up`, `down`, `toggleTailscale`, `status`, `netcheck`.
+Shell IPC (`omarchy-shell io.github.krhr5.omarchy-tailnet <fn>`): `open`, `close`, `toggle`, `refresh`, `up`, `down`, `toggleTailscale`, `status`, `netcheck`.
 
 ## Credits
 

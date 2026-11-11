@@ -46,7 +46,7 @@ Item {
   property string actionStatus: ""
   property string lastError: ""
 
-  // ---- Tailscale Plus additions ----
+  // ---- Omarchy Tailnet additions ----
   property string selfIpv6: ""
   property string selfOs: ""
   property string selfRelay: ""
