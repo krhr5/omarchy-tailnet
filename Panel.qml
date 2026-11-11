@@ -464,7 +464,13 @@ Panel {
     })
   }
 
+  // Hovering a row moves the cursor too, but must not scroll the panel:
+  // with an expanded machine row the list can be taller than the view, and
+  // following the pointer would make the panel jump under the mouse.
+  property bool _pointerSelecting: false
+
   function scrollCursorIntoView() {
+    if (_pointerSelecting) return
     if (focusSection === "peers" && peerList && filteredPeers.length > 0) {
       peerList.positionViewAtIndex(Math.max(0, Math.min(peerIndex, filteredPeers.length - 1)), ListView.Contain)
       peerList.rememberPosition()
@@ -1535,7 +1541,11 @@ Panel {
       acceptedButtons: Qt.LeftButton
       hoverEnabled: true
       cursorShape: Qt.PointingHandCursor
-      onContainsMouseChanged: if (containsMouse) root.setPeerCursor(peerRow.rowIndex)
+      onContainsMouseChanged: if (containsMouse) {
+        root._pointerSelecting = true
+        root.setPeerCursor(peerRow.rowIndex)
+        root._pointerSelecting = false
+      }
       onClicked: root.togglePeerDetails(peerRow.peer)
     }
 
